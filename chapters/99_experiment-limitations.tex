@@ -1,0 +1,125 @@
+\chapter{Experimental Limitations}
+
+% \begin{flushright}
+% \textit{``Behind it all is surely an idea so simple, so beautiful, that when ---in a decade, a century, or a millennium--- we grasp it, we will all say to each other, how could it have been otherwise? How could we have been so stupid for so long?''}
+% \\ --- John Archibald Wheeler
+% \end{flushright}
+
+
+
+
+I began this thesis with great hubris. I was investigating something I knew nothing about, but now that I am almost done, after years of research, long nights spent reading at the library and typing behind a computer screen, I have finally reached the point where I can say, with absolute certainty, beyond all reasonable doubt, that I \textit{definitely} know nothing.
+
+\section{The Limitations of Evaluation Data}
+An unaddressed issue is the assumption that the evaluation data is sound and complete, i.e.\ the source of ground truth is true and that its coverage is comprehensive. Which isn not easy to prove, as there are hundreds of thousands of documents in these test collections, over a million (1,367,000) in the ones I used. If the qrels are incomplete, if a relevant document exists in the collection that is not present in the qrels, then retrieving this previously unidentified document could negatively impact the accuracy metrics.
+
+Another unaddressed issue is the presence of inconsistencies in evaluation data sets. As described previously, Vocabulary Mismatch is pervasive. Even experts use inconsistent vocabulary when describing the same concept. Similarly, experts are inconsistent when constructing evaluation data \cite{schamber1994relevance}. Relevance judgements can differ for each judge and for the same judge at different times. This is because the evaluation data is constructed from language, we all use language differently, and we all read language differently. We each have our own personal view on language. This is called an idiolect; it is the dialect specific to a person.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Limitations of Lexical-Semantics}
+
+This entire research project was focused on the vocabulary mismatch problem, assuming that the \textit{meaning} of a search query could be inferred solely from the lexical semantics, the \textit{meaning} of individual words. Obviously, many other language features heavily influence \textit{meaning}.
+
+\subsubsection{Syntax}
+If the words are the same, the meaning can be dependent on word order.
+
+\begin{center}
+    \begin{tabular}{@{}l@{}}
+        1. Man bites dog. \\
+        2. Dog bites man. \\
+    \end{tabular}
+\end{center}
+
+\subsubsection{Punctuation}
+Even if the word order is the same and the words are the same, the meaning can depend on punctuation.
+
+\begin{center}
+    \begin{tabular}{@{}l@{}}
+        1. I enjoy cooking, my friends, and my dog. \\
+        2. I enjoy cooking my friends and my dog. \\
+    \end{tabular}
+\end{center}
+
+\subsubsection{Pragmatics}
+If the words, the order, and the punctuation are the same, the meaning of a sentence can still be dependent on the wider pragmatics not present in the sentence.
+
+\begin{center}
+    The spread of coronavirus is exacerbated for 2 reasons:
+\end{center}
+% \end{center}
+\begin{center}
+    \begin{tabular}{@{}l@{}}
+        1. How dense people are. \\
+        2. How dense people are. \\
+    \end{tabular}
+\end{center}
+
+All of these and many other features of language were excluded to make the experiments conductible. A system that accounts for word order and punctuation would certainly perform better at text-retrieval. However, as the last example entitled Pragmatics shows, even when accounting for many more tricks and traps of language, there can still be edge cases with ambiguity because language is intricate.
+
+\section{The Limitations of Term Matching}
+
+The focus of my research was the Term Matching Model of relevance, specifically the issue with the vocabulary mismatch between writers of the English language. However, it should now be apparent that directly matching terms is insufficient to determine perfect semantic similarity between different texts. Vocabulary similarity can, and often does, correlate with a semantic similarity, but it cannot ever confirm a shared meaning. As the mere consideration of lexemes (single terms) can only hope to encompass lexical-semantics, it will never accommodate the wider pragmatics of communication.
+
+The language barrier between us and information is obviously broader than a mismatch in vocabulary. Word Sense Disambiguation (WSD) can be notoriously difficult even for fluent speakers. For example, the lexical semantics can directly oppose a speaker's intended meaning when employing verbal irony and sarcasm, a non-literal meaning when using idioms and metaphors, or a subtly different meaning when using litotes understatement, and overstated hyperbole. These rhetorical figures of speech can cause many different kinds of miscommunication, including not \textit{getting} the joke.
+
+For the most part, this thesis has only discussed the ambiguities introduced by the use of polysemous, homographic, and other simple binary sense relations, which can improve WSD. However, matching the raw text is not the same as matching the underlying word sense or meaning. If WordNet were a more accurate and complete semantic ontology, the experiment results would certainly be better, but it would still be a long way from being perfect.
+
+
+
+% It is clear to me now that WordNet is incomplete, there are missing words, and missing associations between words. If it were more complete the results from my second experiment would be better. But it cannot be much more complete that it is now.
+
+% So many inferences are made in natural language communication, far more than we are consciously aware of. 
+% The wider context of the word often helps disambiguate 
+% Inference from the wider context
+% Conversational implicature, Presupposition, Entailment
+% Paul Grice tried to distill the implicit communication rules we follow in the Cooperative Principle, a set of maxims he claims we all follow.
+% Quality		Factual, truthful
+% Quantity 	not too much, not too little
+% Manner	form
+% Relevance	
+
+% The assumed context when conversing with an information system is one worth exploring.
+\section{The Limitations of Semantics}
+Beyond the semantic understanding of language is the pragmatic understanding, which encompasses the wider scope of communication, the entire context between communicators. The pragmatics of conversational speech is different to the pragmatics of search engines. The pragmatics of speech include Paul Grice's Cooperative Principle \cite{grice1975logic}, which attempts to distill the implicit communication rules we all follow when talking to other people. A set of expected conversational norms that include quality, quantity, manner, and relevance. When attempting to speak with clarity, speakers follow these norms unthinkingly, by avoiding vagueness, rudeness, untruthfulness, irrelevance, and over-talking. Similarly, when we converse with a search engine, there are also implicit norms users follow. Most obviously is the dialect of search queries. They lack accurate spelling, often lack syntactic grammar, and largely comprise of simple keywords and noun phrases.
+
+Another important aspect of pragmatics is J. L. Austin's Speech Act Theory \cite{austin1975things}. Austin describes illocution, which is how language not only presents information but it can also perform an action, including: promises, threats, compliments, offence, invitations, advice, complaints, and requests. John Searle later classified Speech Acts into four categories \cite{searle1976classification}, directives, commissives, expressives, and declarations. Of these categories directives most strongly relate to IR research, specifically the directive requesting information.
+
+Consider the following simple sentence ``take me home". If I spoke those three words to a person, they would likely infer the illocutionary speech act as a directive, an ordering to take me home. However, when those three words are provided to a web search engine, a very different directive is communicated. This is because within the context between users and search engines, there is an assumption that a search engine cannot transport you to a different physical location. The illocutionary speech act is probably \textit{``Can you please locate a website which can play the song: take me home?"}, a far more appropriate interpretation.\footnote{If you provide your Google Map's account with your home address; Googling ``take me home'' will provide a route on Google Maps from your current GPS location to your home as the top result.} If those three words were given to an ecommerce search engine (e.g.\ TradeMe, eBay, Amazon), the illocutionary speech act would likely be ``Let me purchase a physical copy of the song: take me home''.
+
+Term matching is a heuristic that approximates the meaning of words. While term matching can be very effective in many cases, it's shortcomings quickly become evident when you try to use Google Web Search to find a movie you vaguely recall, or a song with lyrics you misheard, or anything that exists on the tip of your tongue, or the bottom of your memory stack. Despite these limitations, and despite the language barriers that separate us all, it is clear that we can improve a machine's ability to perform semantic disambiguation to a degree. Though machines are still \textit{vastly} inferior to human levels of comprehension and will remain so until machines can perform such advanced language tasks as deliberate miscommunication, i.e.\ construct a misdirection joke.
+
+% It is possible to improve word sense disambiguation
+
+% Because of my limited understanding of language there are limits on what I can do at present.
+
+% \section{Machines can be Improved}
+
+
+% It circumvents many aspects of language, 
+
+
+% which is why it must be amend term matching systems with semantic mapping databases like thesauri. Still, it is merely patching an inherently flawed system. 
+
+
+% \section{Pragmatics}
+% So far we have been discussing mainly semantics, but we can also consider the pragmatics, which is the wider scope which includes context, usually the social-context.
+
+% So many inferences are made in natural language communication, far more than we are consciously aware of. 
+% The wider context of the word often helps disambiguate 
+% Inference from the wider context
+% Conversational implicature, Presupposition, Entailment
+% Paul Grice tried to distill the implicit communication rules we follow in the Cooperative Principle, a set of maxims he claims we all follow.
+% Quality		Factual, truthful
+% Quantity 	not too much, not too little
+% Manner	form
+% Relevance	
+
+% We naturally employ many different rhetorical devices in communication that on the surface appear to breach the Cooperative Principle. We use euphemistic language to avoid obscenities, and to appear modest. understate, overstate, even irony breaches, the maxim of quality
+
+% Miscommunications is rife
+% Is it a holiday home or a bach
+% Domestic terrorist or a freedom fighter
+% Flying or falling with style
+
+% This poses a problem for information retrieval 
+% So in order to teach these rules to an IR system one must

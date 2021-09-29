@@ -1,0 +1,348 @@
+\chapter{Experiment Conditions}
+\label{chap:experiment-conditions}
+
+It should not be a surprise that the experiments herein will be focused on improving automatic query expansion using linguistic features, specifically reducing query drift. This chapter outlines the final few ingredients required to bake a tasty science cake.
+
+\section{Search Engine}
+The experiments will be performed on the academic search engine ATIRE \cite{Trotman:2012:OSI:2422256.2422269}, a bag of words term matching information retrieval system that ranks with an Okapi BM25 variant. The parameters of BM25 ($k_1$ and $b$) are chosen empirically by particle swarm optimization \cite{Trotman:2014:IBL:2682862.2682863} and are fixed for all experiments. The IDF component $log ({N} / {\mathit{df}_{\!\!t}} )$ from Robertson-Walker \cite{Lee:2007:IRS:1277741.1277891} will be used as it prevents negative weights. This is a useful feature for practical implementations because when the top-$k$ document scores are accumulated term by term, the scores will never decrease in value. Hence, documents that score 0 can be immediately discarded as irrelevant.
+
+\subsection{Query Expansion}
+BM25 ranking can be easily adapted to support na{\"i}ve query expansion (see Equation \ref{eq:bm24qe}) by modifying the query terms ($Q$) to include all expansion terms ($e_t$), Equation \ref{eq:bm25-expansion-terms}. More sophisticated expansion techniques will be introduced in the later chapters.
+
+\begin{equation}
+	Q_{e} \leftarrow \bigcup_{t \in Q} ( e_t \cup t ) ; \text{where } e_t \text{ is the set of expansion terms for } t.
+	\label{eq:bm25-expansion-terms}
+\end{equation}
+
+
+%%%%%%%%%%%%%%%%%%%% REPLACE THIS BM25 formulation
+\begin{equation}
+	\text{BM25}(d) = \sum_{t \in Q_{e}} \: log \Big( \frac{N}{\mathit{df}_{\!\!t}} \Big) \times \frac{(k_1 + 1) \cdot \mathit{tf}_{\!\!td}}{k_1 \cdot \Big(1-b + b \cdot \Big(\frac{L_d}{L_{avg}}\Big) \Big) + \mathit{tf}_{\!\!td}}
+	\label{eq:bm24qe}
+\end{equation}
+
+% \[
+% 	\text{BM25}(d) = \sum_{t \in Q} \: log \Big( \frac{N}{\mathit{df}_{\!\!t}} \Big) \times \boxed{\frac{(k_1 + 1) \cdot \mathit{tf}_{\!\!td}}{k_1 \cdot \Big(1-b + b \cdot \Big(\frac{L_d}{L_{avg}}\Big) \Big) + \mathit{tf}_{\!\!td}}}
+% \]
+
+% \vspace{1em}
+
+% \vspace{-0.3em}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Expansion Terms}
+% We used WordNet  \cite{Miller:1995:WLD:219717.219748} as a source of expansion terms.
+Two data sets will be used as the source of expansion terms, and both are semantic ontologies that will be leveraged to address the vocabulary mismatch directly. The first is a modern edition of Roget's thesaurus, which identifies synonyms. We will use the 2004 Project Gutenburg edition, which identifies over 36,000 different concepts. 
+
+% , and the most recent edition (2019) contains 443,000 words
+
+The second ontology is WordNet, with 25 different relationship types. Some are symmetric where the terms participating in the relation relate to each other in what WordNet denotes as a \textit{SynSet} or \textit{synonym ring}. Other relationships are not symmetric and describe \textit{`is-a'} or \textit{`has-a'} relationships described earlier (holonyms, meronyms, hypernyms, and hyponyms). These asymmetric relations do not form rings but rather hierarchies or taxonomies.
+
+As mentioned previously, many IR researchers have used older versions of WordNet for query expansion, including Voorhees, who used version 1.3 \cite{Voorhees:1994:QEU:188490.188508}. We will use version 3.1, the most recent version currently available. We anticipate that using a modern version of WordNet will outperform earlier experiments as the literature says that successful query expansion   depends on the quality of the ontology \cite{kim1990model, jones1993thesaurus}, i.e. coverage, completeness, and accuracy.
+
+% e.g. 'Cat' $\leftarrow$ 'Mammal', Cat is a hyponym of Mammal, and Mammal is a hypernym of Cat.
+% hierarchical in nature, and have a corresponding pair which defines the other direction.  
+
+\begin{table}[]
+\centering
+\begin{tabular}{|r|r|r|l|}
+\hline
+ver & release & SynSets & notable additions \\
+\hline
+1.0 & Jun 1990 & 37,409 &  \\
+1.1 & Aug 1991 & 44,983 &  \\
+1.2 & Apr 1992 & 49,771 &  \\
+1.3 & Dec 1992 & 61,023 &  \\
+1.4 & Aug 1993 & 79,542 &  \\
+1.5 & Mar 1995 & 91,050 &  \\ % http://www.phmartin.info/CGKAT/ontologies/coWordNet.html
+1.6 & 1998 &  & SemCor  \cite{semcor}\\
+1.7 & 2001 &  & holonym/meronym inheritance \\ % https://raw.githubusercontent.com/sumitbhagwani/CoarseWordNet/master/CoarseWordNet/resources/WordNet-1.7/CHANGES
+%1.7.1 & 2001 &  & --  \\ % http://wordnetcode.princeton.edu/1.7.1/CHANGES
+2.0 & 2003 &  & 6 domain \& derivation relations \\ % http://wordnetcode.princeton.edu/2.0/CHANGES
+2.1 & 2005 & 117,597 & hyponym subclasses \\ % http://wordnetcode.princeton.edu/2.1/CHANGES
+3.0 & 2006 & 117,659 & noun verb relations \\ % http://wordnetcode.princeton.edu/3.0/CHANGES
+3.1 & 2012 & 117,659 & -- \\
+\hline
+\end{tabular}
+\caption{WordNet Version History}
+\label{wordnet-history}
+\end{table}
+
+\subsection{WordNet 3.1 Relationships}
+The following is a description of the lexical-semantic relationships provided by WordNet, which correspond to definitions in linguistics. These relationships are are binary associations between nouns, verbs, adjectives, and adverbs. Other grammar particles, such as articles, prepositions, and conjugations are absent from WordNet as they don't carry any lexical-semantic information independently.
+
+\subsubsection{SynSet}
+A synonym set, where synonymy is defined as broadly as possible: \textit{``interchangeable in some context''}. So each word in the SynSet shares at least one word sense with every other word. i.e.\ a single thesaurus entry.
+
+\subsubsection{Similar to}
+Weak synonymy, or near synonymy. \\
+`damp' $\leftrightarrow$ `wet' \\
+`instrument' $\leftrightarrow$ `tool'
+
+\subsubsection{Also see}
+Related SynSets. \\
+`cold' $\leftrightarrow$ `cool' \\
+`cold' $\leftrightarrow$ `frozen'
+
+\subsubsection{Instance}
+Specific referent's, i.e.\ proper nouns. \\
+`Hubble' $\rightarrow$ `telescope' \\
+`Australia' $\rightarrow$ `country'
+
+\subsubsection{Troponym}
+Semantically related verbs with different connotations. \\
+`eat' $\leftrightarrow$ `nibble' \\
+`eat' $\leftrightarrow$ `gorge' \\
+`eat' $\leftrightarrow$ `pig out'
+
+\subsubsection{Antonym}
+Terms opposite in meaning. \\ 
+`hot' $\leftrightarrow$ `cold' \\
+`father' $\leftrightarrow$ `son'
+
+\subsubsection{Entailment} 
+A verb X entails Y if X cannot be done unless Y is, or has been done prior. \\
+`snore' $\rightarrow$ `sleep' \\
+`fall' $\rightarrow$ `rise'
+
+\subsubsection{Hyponym} 
+A specific term designating a member of a class. X is a hyponym of Y if X \textit{`is-a'} Y. \\ 
+`red' $\rightarrow$ `colour' \\
+`lion' $\rightarrow$ `mammal'
+
+\subsubsection{Hypernym} 
+The inverse of hyponym, a more general word. Y is a hypernym of X if X \textit{`is-a'} Y. \\
+`phone' $\rightarrow$ `smartphone' \\
+`oil' $\rightarrow$ `petroleum'
+
+\subsubsection{Meronym} 
+A constituent element of something. X is a meronym of Y if Y \textit{`has-a'} X. \\
+WordNet distinguishes three subclasses of meronyms: \\
+Substance: `hydrogen' $\rightarrow$ `water' \\
+Member: `lion' $\rightarrow$ `pride' \\
+Part: `phone' $\rightarrow$ `phone box'
+
+\subsubsection{Holonym}
+The inverse of meronym, also divided into Member, Part, and Substance subclasses. \\
+Substance: `beer' $\rightarrow$ `alcohol' \\
+Member: `Australia' $\rightarrow$ `Australian' \\
+Part: `car' $\rightarrow$ `wheels'
+
+\subsubsection{Derivation}
+Nouns derived from verbs morphologically. \\
+`supervisor' $\rightarrow$ `supervision'
+
+\subsubsection{Cause}
+% Participial Adjective
+Adjectives derived from verbs. \\
+`break' $\rightarrow$ `broken' \\
+`kill' $\rightarrow$ `die'
+
+\subsubsection{Attribute}
+Nouns derived from adjectives. \\
+`fluffiness' $\rightarrow$ `fluffy' \\
+`fecundity' $\rightarrow$ `fertile' 
+
+\subsubsection{Pertainym}
+Relational adjectives derived from nouns. \\
+`sunny' $\rightarrow$ `sun' \\
+`lunar' $\rightarrow$ `moon'
+
+%%%%%%%%%%%%%%%%%%%%%%%%% UNKNOWN RELATIONS
+% Verb Group
+% Verb Participle
+% \textit{`Domain'}.
+% usage, co-occurrence analysis
+% underspecified relation 
+% TOPIC RDF/OWL
+% REGION 
+% USAGE 
+% \subsubsection{Derived from adjective}
+% Adverbs derived from adjectives. \\
+% `happily' $\rightarrow$ `happy'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Evaluation}
+
+To evaluate retrieval performance, we will be using test collections provided by TREC (Text Retrieval Conference), co-sponsored by NIST (National Institute of Standards and Technology) and the U.S. Department of Defense. The TREC test collections were constructed to help develop retrieval systems for large scale text retrieval.
+
+TREC provides many different tracks for a variety of tasks. We will be using the ad-hoc text-retrieval tracks 1-8 for all experiments. In the 8 tracks, there are approximately 1,367,000 text documents that were all originally published as news articles, congressional records, patents, etc. The documents have been made available (with permission) for text retrieval evaluation.
+
+% \begin{itemize}
+%     \item U.S. Patents (1983-1991)
+%     \item Wall Street Journal (1987-1992)
+%     \item Associated Press (1988-1990)
+%     \item The Federal Register (1988-1994)
+%     \item The Los Angeles Times (1989-1990).
+%     \item Department of Energy abstracts
+%     \item Information from the Computer Select disks (1989-1992)
+%     \item San Jose Mercury News (1991)
+%     \item The Financial Times Limited (1991-1994)
+%     \item The Congressional Record of the 103rd Congress (1993)
+%     \item The Foreign Broadcast Information Service (1996)
+% \end{itemize}
+
+TREC provides 50 queries for each track, 400 in total for all 8 tracks. Each query was written for a specific information need, called a \textit{topic}. Along with the queries, there are a set of \textit{relevance judgments} (qrels) which indicate which documents are relevant to each query. The judgements are pooled together from human expert evaluations \cite{voorhees2005trec}. The qrels are binary evaluations, i.e.\ relevant or not. Other test collections are graded on a scale; see Figure \ref{fig:graded-relevance}.
+
+
+For our experiments, we will construct an index (postings list) from the documents, perform a ranked search with each query, and determine the accuracy of the rank using the qrels as a source ground truth. We will also compare our experiments to blind relevance feedback as a benchmark. Relevance feedback was implemented with Rocchio's algorithm with expansion terms sourced from the top 17 documents, specifically the top 5 content-bearing terms ranked with KL divergence. These were the default settings of ATIRE that did not need to be changed for our experiments.
+
+Next, we look into evaluation metrics to measure the accuracy relative to the qrels.
+
+\begin{figure}
+    \begin{center}
+        \begin{minipage}{0.25\textwidth}
+            \begin{enumerate}
+                \setlength\itemsep{0em}
+                \item Not relevant
+                \item Kinda relevant
+                \item Relevant
+                \item Very relevant
+            \end{enumerate}
+        \end{minipage}
+    \end{center}
+    \caption{Example Graded Relevance Judgements}
+    \label{fig:graded-relevance}
+\end{figure}
+
+\subsection{Precision and Recall}
+% precision: positive predicted value
+% recall: true positive rate
+
+To determine the accuracy of a search engine, we compare its output to some ground truth (relevance judgements). We can calculate the accuracy via two metrics, \textit{precision} and \textit{recall}, which can be computed for both binary and graded relevance judgements \cite{kekalainen2002using}. For explanatory purposes, we will focus on binary judgements.
+
+Let us first conjure an Oracle, a hypothetical binary classifier that is necessarily infallible. The Oracle has perfect judgement. It can determine if a document would satisfy the user's information need with unequivocal certainty. The Oracle speaks only two phrases, \textit{``relevant''} and \textit{``not relevant''}, i.e.\ whether the document satisfies the user's information need or not. Using the Oracle judgements as ground truth, we can compare to the output of a real search engine. 
+
+The output of a real search engine is the set of documents that are believed to be relevant. These are the \textit{retrieved} documents; the remaining documents are \textit{not retrieved} as they are determined to be \textit{not relevant}. We compare the Oracle with a Real System by the \textit{confusion matrix} in Figure \ref{table:confusionmatrix}.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{cc|c|c|}
+        \cline{3-4}
+        & & \multicolumn{2}{|c|}{Oracle}\\
+        \cline{3-4}
+        & & Relevant & Not Relevant \\
+        \hline
+        \multicolumn{1}{ |c| }{Real} & 
+        \multicolumn{1}{ |c| }
+        {Retrieved} & \hl{True-Positive}  & \hlcyan{False-Positive} \\
+        \cline{2-4}
+        \multicolumn{1}{ |c| }{System} & \multicolumn{1}{ |c| }
+        {Not Retrieved} & \hlpink{False-Negative} & \hlgreen{True-Negative} \\
+        \hline
+    \end{tabular}
+    \caption{Comparing an Oracle (ground truth) to a Real System.}
+    \label{table:confusionmatrix}
+\end{table}
+
+% https://towardsdatascience.com/beyond-accuracy-precision-and-recall-3da06bea9f6c
+% https://en.wikipedia.org/wiki/Precision_and_recall#Definition_(classification_context)
+% https://en.wikipedia.org/wiki/Sensitivity_and_specificity
+
+% Analogy to the boy who cried wolf. Wolf when there is a wolf. No wolf when there is no wolf. etc...
+
+\newpage
+Every document in the corpus will fall into one of four categories. A perfectly correct system is when the Real System and the Oracle agree on each document. 
+
+A \hl{True-Positive} is when the Real System \textit{correctly} identifies a document as relevant. This is a successful hit. Similarly, a \hlgreen{True-Negative} is when the Real System \textit{correctly} identifies a document as not relevant. This is a successful rejection. A \hlcyan{False-Positive} is when the Real System \textit{incorrectly} identifies a document as relevant; a spurious document that should not have been retrieved, but is. And a \hlpink{False-Negative} is where the Real System \textit{incorrectly} identifies a document as not relevant; a document that should be retrieved, but isn't. 
+
+\textit{Recall} is the proportion of the relevant documents that are retrieved, it measures the amount of \hlpink{False-Negatives}. The proportion of \hl{True-Positives} to Relevant documents. We can maximize recall by retrieving \textit{all} of the documents, i.e.\ no relevant document is left unretrieved. This would reduce the \hlpink{False-Negatives} to 0, but in all likelihood, increase the \hlcyan{False-Positives} dramatically. 
+
+\textit{Precision} is the proportion of the retrieved documents that are relevant, it measures the amount of \hlcyan{False-Positives}. The proportion of \hl{True-Positives} to Retrieved documents. We can maximise precision by retrieving a \textit{single} relevant document, i.e.\ no irrelevant document is retrieved. This would reduce the \hlcyan{False-Positives} to 0 but also increase the \hlpink{False-Negatives} dramatically.
+
+For successful retrieval we want to maximise both precision and recall, however, in practice, they are inversely proportional to each other \cite{shafi2005precision}.
+
+% Oftentimes improving Precision and Recall independently appears to behave as competing forces.
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%% AVERAGE PRECISION
+\subsection{Average Precision}
+
+Our experiments will perform \textit{ranked} retrieval, where the ranking function (BM25) will present the retrieved documents in descending order of relevance. The retrieved documents' rank (or order) is significant from a usability perspective as the average users will not read every retrieved document; they will only read the first few (at most). Precision and recall alone are inadequate to evaluate ranked retrieval as they are indifferent towards the document rank.
+
+Average Precision (AP) measures the accuracy of ranked retrieval and accounts for both precision and recall \cite{su2015relationship}. AP can be regarded as a model of user searching behaviour \cite{robertson2008new}. Defined as\textit{ ``the mean of the precision scores obtained after each relevant document is retrieved, using zero as the precision for relevant documents that are not retrieved''} \cite{buckley2017evaluating}. The output of the ranking function is not evaluated directly but rather ranked retrieval list. The top ranks are weighted higher, and the bottom ranks are weighted lower. So if a Search Engine ranks a relevant document first, it is rewarded highly, whereas if it ranks an irrelevant document towards the bottom of the rank, it is punished less. 
+
+% The Average Precision formulation we will be using can be seen in equation \ref{eq:ap}.
+
+\begin{equation}
+    rel(d, q) = \begin{cases} 1 & \text{if document } d \text{ is judged relevant w.r.t query } q \\ 0 & \text{otherwise} \end{cases}
+    \label{eq:aprel}
+\end{equation}
+
+\noindent
+$rel(d, q)$ is the ground truth relevance judgement of document $d$ in collection $D$ ($d \in D$) with respect to query $q$. See Equation \ref{eq:aprel} above.
+
+\begin{equation}
+    R = \sum_{d \in D}rel(d, q)
+    \label{eq:apR}
+\end{equation}
+
+\noindent
+$R$ is the total number of documents that are judged to be relevant with respect to query $q$. See Equation \ref{eq:apR} above.
+
+\begin{equation}
+    P@n = \frac{1}{n} \sum_{d \in S}rel(d, q)
+    \label{eq:pan}
+\end{equation}
+
+\noindent
+Precision at rank $n$, $P@n$, is the number of relevant documents retrieved by rank $n$, divided by $n$. $S$ is the ranked set of retrieved documents, an ordered subset of the document collection $D$ ($S \subseteq D$). See Equation \ref{eq:pan} above.
+
+\begin{equation}
+    AP = \frac{1}{R}\sum_{n=1}^{|S|} rel(s_{i}, q) \times P@n
+    \label{eq:ap}
+\end{equation}
+
+\noindent
+Equation \ref{eq:ap} is the full Average Precision ($AP$) formula.
+
+% Since AP accounts for precision, recall, and rank position we will be making use of it heavily.
+
+% From a collection of documents D the Search Engine 
+
+\subsection{Mean Average Precision}
+Average Precision (AP) measures the accuracy of a single query. However, to measure the accuracy for all topics in the track we compute the Mean Average Precision (MAP). MAP is the mean of the AP scores across every topic. MAP is considered the gold standard for evaluating ranked retrieval for TREC \cite{TRECAP}.
+
+
+
+% TREC ad-hoc retrieval evaluation technique Average Precision
+
+% Now that we can evaluate the performance of a query, let's see what we can do to improve them.

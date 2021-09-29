@@ -1,0 +1,209 @@
+\chapter{Improving Search Queries}
+\begin{flushright}
+    \textit{``Anything worth knowing is worth writing down."}
+    \\ --- bullseyed723 (reddit.com 2016)
+\end{flushright}
+
+
+% A Survey of Automatic Query Expansion in Information Retrieval
+% https://dl.acm.org/doi/pdf/10.1145/2071389.2071390
+
+
+%%%%%%%%%%%%%%%%%%%%%%% link language back to vocab mismatch
+In the previous chapter, we established a fairly comprehensive foundation of how words can be conflated. We can apply that knowledge to try and improve search queries from a linguistic perspective. Vocabulary mismatch (term mismatch) in ad-hoc retrieval is caused by document authors and query authors not using the same words, primarily caused by natural languages' highly ambiguous nature. An obvious cause of term mismatch are morphological differences, for example, ``teacher'' and ``teaching'' both derive from the same root word ``teach'', they both refer to the same concept, but a term matching system will fail to infer any relevance as they are clearly distinct terms. The two main causes of vocab mismatch (i.e. lexical-semantic differences) are synonymy and polysemy. If a query and document use \textit{different} terms but the same word sense (synonyms), the term matching system could fail to retrieve a relevant document (false negative) and consequently reduce recall. If the query and document use the \textit{same} terms but with different intended word senses (polysemes), the term matching system could retrieve the non-relevant document (false positive) and consequently reduce precision. \textit{Recall} and \textit{precision} are retrieval performance metrics. A comprehensive explanation of recall and precision can be found in Chapter \ref{chap:experiment-conditions}.
+
+%%%%%%%%%%%%%%%%%%%%%%% QUERY REFORMULATION
+\section{Query Reformulation}
+Query reformulation is the process of modifying a query into one which better represents the information need or one with a more useful vocabulary. During a search session, if a user is unsatisfied with the retrieved documents, they will often manually reformulate their query several times. Unfortunately, users can lack domain-specific knowledge and awareness of the vocabulary used in the document collection, which prevents ideal refinement. They may also lack the patience or persistence to refine the query until perfection, which is why this task is often outsourced to machines that are always faster and sometimes more effective.
+
+Automatically modifying a user's query to improve retrieval performance was first suggested in 1960 \cite{maron1960relevance}. While early attempts were ineffective modern attempts are much better and can be found in many commercial retrieval systems. In modern web search, query reformulation happens before the first tier of a multi-tier ranking pipeline; the stage that reduces billions of documents to millions. Since the effects of query reformulation will propagate throughout the entire pipeline it is vital that queries are modified for the better. Much like baking a tasty cake requires quality ingredients, so too do the upper tiers of a ranking pipeline require high quality input.
+
+The most common automated reformulation operations are appending, removing, and substituting query terms, but also re-weighting existing query terms to adjust their influence. Another reformulation operation (that is less relevant for our research) is the inclusion of refinement directives such as publication date, language, document type, origin. Appending terms to the query is the most common and most relevant reformulation to our research. It is known in the literature as \textit{query expansion}.
+
+% There are several automated methods which can reformulate an inadequate search query. 
+% Some are fully-automated and happen without the users knowledge, others are user guided and take direct input from the user to guide the reformulation.
+
+
+%%%%%%%%%%%%%%%%%%%%%%% IQE
+\subsection{Interactive Query Refinement}
+The most apparent automated reformulation technique is Interactive Query Refinement, where a system provides suggestions to refine the query. The most well known is Google Suggest (the \textit{``did you mean...''} feature), which is very effective at refining a query if a user misspells terms. Google also has Autocomplete, which is a predictive text language model that suggests query terms to add. Another way a user can refine their search is with category filtering. For example, on Google Web Search, you can refine your search by selecting Images, Videos, News, Maps, Books, Shopping, etc. What unifies these different types of interactive query refinements is that the user has direct control. They judge whether the query would be better with or without the proposed reformulation.   
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%% AQE
+
+% Regardless of the method of query expansion it has proven effectiveness in many domains TREC, biomedical datasets \cite{rivas2014study}, 
+
+\section{Automatic Query Expansion}
+The process of adding more terms to a query is called Query Expansion, and the purpose is to broaden the query's vocabulary to over come any vocabulary mismatch. The hope is to increase the likelihood that the query will contain terms that are also contained in the relevant documents while still capturing the user's information need. Automatic Query Expansion (AQE) can event be done without the user knowing it is happening.
+
+A retrieval system can expand a query to compensate for any ambiguity. For example, if a search query contained the acronym (\textit{``IR"}), it could add the expansion of that acronym (\textit{``Information Retrieval''}) to the query, which would then allow the retrieval of a document that does not include  ``IR'' but does include \textit{``Information Retrieval''}. The first result on Google when searching ``IR'' (for me) is the New Zealand Inland Revenue Department's website, which doesn't appear to include the acronym ``IR''. This does not prove that Google performs query expansion. However, they apparently own 329 patents that mention ``query expansion'', which suggests they probably are. See Appendix \ref{appendix:googlepatent}. The number 329 could be an overestimate because I used Google's search engine to retrieve that list, and since it probably performs query expansion there's no guarantee that all those documents contain the phrase ``query expansion".
+
+%%%%%%%%%%%%%%%%%%%%%%% stemming
+\subsection{Stemming Methods}
+There have been many attempts to perform query expansion using linguistic knowledge over the years, starting in the 1960s with stemming. These systems account for morphological differences by stripping suffixes from words. For example, \textit{``teacher''} and  \textit{``teaching''} would both be treated as the affix \textit{``teach''}. Suffix stripping systems of the 1960s-1980s include Lovins \cite{lovins1968development}, Porter \cite{porter1980algorithm}, Dawson \cite{dawson1974suffix} and Paice \cite{paice1990another}. These lexical systems account for most regular derived and inflected forms; however, they may preclude irregular forms like ``taught''. They may handle\MarkText[red]{``teached''} perfectly well, but it's very uncommon and is considered grammatically incorrect by most authors. 500 years ago\MarkText[red]{``forgat''} and \MarkText[red]{``digged''} were the preferred past tenses.
+
+There are also many words that share morphology but share little semantic similarities, e.g. \textit{``awful''} and \textit{``awesome''} both derive from \textit{``awe''} but differ substantially in meaning. We could manually build a database to handle the thousands of exceptions in the English language, or we could apply statistical modelling to handle them automatically. From the 1990s we started to see statistical analysis (and later machine learning) used for stemming. Corpus-based co-occurrence analysis \cite{xu1998corpus}, Hidden Markov Models \cite{toman2006influence}, YASS  \cite{majumder2007yass}, Krovetz \cite{krovetz2000viewing}, and Xerox \cite{grefenstette1996detailed}. Unsurprisingly these statistical models are provably better in IR applications, especially when used in conjunction with suffix stripping \cite{jivani2011comparative}.
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%% statistical methods
+% https://link.springer.com/content/pdf/10.1007/s10115-018-1269-8.pdf
+% 2018 A survey of statistical approaches for query expansion
+
+% https://link.springer.com/content/pdf/10.1007/s10115-018-1269-8.pdf
+% 2017 survey
+\subsection{Statistical Methods}
+
+% Statistical analysis and machine learning methods can discover the presence of lexical-semantic relationships between words faster than humans but they struggle to identify exactly which linguistic relationship they find. 
+
+% Language modelling has been applied to automatic query expansion problems with success  \cite{Bai:2005:QEU:1099554.1099725}. Usually no term semantics are explicitly used, only co-occurence data mined from the corpus. Some recent experiments however have begun to include term relationships  \cite{Bai:2005:QEU:1099554.1099725}.
+
+% Term clustering Harper and van Rijsbergen 1978, Lesk 1969, Minker et al 1972
+
+% \section{Clustering}
+% scatter gather early 1990s  \cite{scattergather}
+% documents can be clustered into semantic topics
+% iterative process of identifying relevant topics, then gathering them into a larger cluster
+
+Statistical methods expand a query by adding expansion terms that frequently co-occur with the original query terms in other text collections. These systems assume that if a statistical association is found, there must also be some linguistic association. They could be morphological derivations, synonyms, or potentially disparate concepts often used in the same context. For example, ``miracle'' and ``god'' are not synonymous but often co-occur in documents. These systems assume that documents that include the word ``God'' would be relevant to documents that include ``miracle'' and vice versa. This example is a huge oversimplification for explanatory purposes. 
+
+These systems build a statistical thesaurus, then use the thesaurus to expand a query with the statistically associated terms. There are various ways to construct a statistical thesaurus, usually by performing co-occurrence analysis on the document collection \cite{jing1994association}. One could cluster the document collection first then build the thesaurus \cite{crouch1992experiments}. Or one could represent terms and documents as vectors and perform linear algebra to find associations \cite{qiu1993concept}. 
+
+All of the previous methods source expansion terms from the document collection itself, which is why they are often called collection dependent in the literature. Some research suggests that an independent data source (i.e. an ontology) is better suited for bridging the vocabulary disparity \cite{biswas1986knowledge}. However, if a document collection is sufficiently large and contains content relevant to the query, then collection dependent methods are sufficient \cite{bhogal2007review}. Some pure statistical methods exist, but they are usually hybridized with another approach \cite{raza2019survey}, e.g.\ stemming or semantic methods.
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%% semantic methods
+% A Taxonomy and Survey of Semantic Approaches for Query Expansion
+% https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8625452
+% A review of ontology based query expansion
+% https://reader.elsevier.com/reader/sd/pii/S0306457306001476?token=AB893A4C1E9666FAC33030FA226694AA4798E8E805FDFD0877C45C284346EFB6B6C0C1C33E8C910A4F0F666B4F55AEF8&originRegion=us-east-1&originCreation=20210524085417
+
+% https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.227.7491&rep=rep1&type=pdf
+%2004 A Study of Ontology-based Query Expansion
+
+% 2019 Query Expansion Techniques for Information Retrieval: a Survey
+% https://arxiv.org/pdf/1708.00247.pdf
+\subsection{Semantic Methods}
+Stemming is a purely lexical approach, and while lexical similarity often correlates with semantics, it is insufficient to capture the full semantics of a language. Semantic approaches aim to build complete taxonomies of word meaning, often called knowledge structures. These semantic models can vary in complexity from a simple thesaurus to an ontology. The distinction between an ontology and a thesaurus is not clear, but what they have in common is they associate pairs of words that share some semantic meaning. 
+
+The most influential English thesaurus was constructed manually by Peter Mark Roget in the 19th Century. The first edition of Roget's thesaurus (1852) contained 15,000 words, an extraordinary feat. Manually building a knowledge structure by hand is prohibitively expensive since it requires hiring experts with domain knowledge of the documents. Despite their expense, some do exist, such as the Unified Medical Language System (UMLS), which contains terms from 40 biomedical vocabularies \cite{pmid27668467}, and has been applied successfully to IR tasks \cite{pmid9452981}.
+
+Another approach to acquiring a thesaurus is with statistical analysis \cite{qiu1993concept}. However, these are not strictly semantic in nature. These statistical thesauri cannot guarantee that their associations carry any semantic information, only statistical, a distinction often omitted in the literature.
+
+The most comprehensive linguistic ontology is WordNet (or EuroWordNet), a hierarchically organized lexical-semantic mapping table. The first version was constructed by Miller and his team at the Cognitive Science Laboratory of Princeton University \cite{Miller:1995:WLD:219717.219748}. The sense relations in WordNet are more precisely categorised than Roget's single binary category. In its entirety, WordNet is a vast interconnected ontological graph that connects over 155,000 distinct words to each other through 117,000 different concepts.
+
+% General purpose 
+% Roget, WordNet, EuroWordNet,  Cyc
+% which are manually constructed. 
+
+We can perform query expansion with a thesaurus/ontology by adding terms with the same or similar meaning to the query. Using synonyms from a thesaurus for query expansion makes perfect sense, as synonyms are the most obvious cause of vocabulary mismatch. Early IR research indicated general-purpose thesauri were effective \cite{ASI:ASI4630360102}, while later experiments proved their behaviour inconsistent. Sometimes they would significantly improve a query; other times degrade a query. Voorhees manually used WordNet to perform expansion and also concluded that it was too unpredictable to be useful in practice \cite{Salton:1968:CEI:321439.321441}. She said that lexical-semantic relationships provide little benefit but have the ``potential to improve an initial query'' \cite{Voorhees:1994:QEU:188490.188508}. She noted that poorly performing queries have a good chance of being improved but queries that already perform well tend to worsen when query expansion is applied \cite{mandala1998use}.
+
+% Other semantic ontologies identify more categories than just synonyms, including hyponyms, ...
+
+Some researchers found that using synonyms and hyponyms have a limited effect. However, using ``gloss words'' and ``common nodes'' had a better impact \cite{navigli2003analysis}. Here gloss words and common nodes are keywords that refer to broad categories.
+
+
+% thesauri QE mixed results
+% synonym expansion to be always useful
+% hierarchical expansion only useful sometimes
+
+%%%%%%%%%%%%%%%%%%%%%%% ISSUES
+
+% It isn't clear if semantic methods have the capacity to improve search queries as are issues with reliability. The usual culprit blamed for degrading a query's performance is query drift, which we will discuss later.
+
+% show that retrieval is improved if the user is aware query expansion is happening, and of the knowledge model being used  \cite{suomela2005ontology}  \cite{sihvonen2004subject}
+
+%%%%%%%%%%%%%%%%%%%%%%% PROCESS AUTOMATION
+% fully automated
+% requires no user input to function
+% fully-automated: (corpus based (psudo-relevance feedback), relationship based(thesauri, ontology))
+
+
+% .Gonz-alo et al. (1998)use a manually disambiguated test collection of queries and documents derived from the SEM-COR semantic concordance. Their experiment covers three types of index spaces: original terms; word sensesderived from manual disambiguation and finally WordNet synsets. The authors observe that if queries are notdisambiguated, indexing by synsets performs only as good as standard word indexing. According to Gonzalo,indexing with word sense improves information retrieval by more than 29%.
+
+% Relevance feedback described previously modifies queries with terms found in documents directly from the collection.
+% , thus addressing any term mismatch directly from the collection's vocabulary itself.
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%% Relevance Feedback
+
+% Relevance feedback sources new terms from the document collection itself, specifically from a subset determined to be relevant to the original query. Other query reformulation methods source new terms from external sources 
+
+% explicit feedback - relevance judgements
+% implicit feedback - top k assumed
+
+\subsection{Relevance Feedback}
+Relevance feedback is a query expansion technique that sources its query terms differently from the methods described previously. Relevance feedback modifies a search query with terms extracted from documents that are already known to be relevant. It modifies the query's vocabulary to be more similar to the relevant documents provided. It works by finding the content-bearing terms from the set of relevant documents; these terms best describe the relevant documents, i.e.\ they have a high term frequency but low document frequency. These content-bearing terms are ranked in descending order of importance, and the top terms in the rank are appended to the query. There may be hundreds of content bearing terms, but only a small proportion will be chosen to modify the query, which is why we must rank them and select the terms which have the best chance of improving the query. The query reformulation step may simply be appending the new terms to the original query and/or re-weighting the terms to adjust their influence in the relevance function. Setting their weight proportional to their content-bearing rank-score.
+
+It is often implemented using Rocchio's algorithm \cite{rocchio1971relevance}, which was originally devised for the vector space model of relevance allowing for the intuitive explanation: move the \textit{query vector} towards the cluster of \textit{relevant document vectors}. There are many variations for implementing relevance feedback, including the Binary Independence Model (BIM) \cite{robertsonandsparckjones}, Chi-square \cite{article123}, Robertson selection value (RSV) \cite{Robertson:1991:TSQ:104889.104901}, and Kullback-Leibler (KL) divergence \cite{Carpineto:2001:IAA:366836.366860}. All essentially achieve the same goal: find the content bearing terms in the provided relevant documents and modify the query with those content bearing terms.
+
+Relevance feedback can be very effective when adding term(s) relevant to the user's information need which the user unwittingly excluded. However, it can sometimes reduce the query's effectiveness if the provided relevant documents cover a variety of different topics and contain a variety of content-bearing terms, many of which are not relevant to the user's information need.
+
+The obvious issue with relevance feedback is that it requires a set of documents that are known to be relevant to the user's query. This issue is solved by performing two separate searches. The first search finds the relevant documents, and the second search retrieves the final set of results. Early devisings of relevance feedback tasked the user with manually selecting these relevant documents. The search engine would first retrieve a set of documents with the user's original query; then, the user would indicate which documents are relevant using a binary or graded assessment. An improved version called Blind Relevance Feedback (or pseudo relevance feedback) removed the user from the pipeline by assuming the top documents from the first search would be relevant and contain the right content bearing terms. Blind Relevance Feedback is a fully automated system that can happen without the user even knowing it is happening. The biggest drawback to both of these relevance feedback implementations is that the time to search is doubled. You must perform at least two searches for every query, the first to acquire the set of relevant documents and the second to acquire the final set of results. Two passes through the search pipeline are especially slow in distributed search, requiring merging the documents lists from the first pass across a network \cite{martinezsantiago}. Despite its significant performance cost, Relevance Feedback remains one of the best query expansion approaches today \cite{Carpineto:2012:SAQ:2071389.2071390}.
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%% ADDING TERMS...?
+% one-third of the terms in the context of historical English text \cite{robertson1993comparison}.
+\section{How many terms to add?}
+Adding query terms can only increase recall; however, precision can go up or down depending on the quality of the expansion terms. There is no consensus on exactly how many terms should be added, as it depends on the query, the document collection, how the expansion terms are acquired, and where the expansion terms are from.
+
+Some research indicates that adding 20 terms is optimal for relevance feedback systems \cite{harman1992relevance}. Some suggest between 300 – 500 terms for ``massive query expansion'' with collection dependent statistical analysis \cite{buckley1995automatic}. However, much research says there is no one-size-fit-all number as every query is unique \cite{billerbeck2004questioning} and that the type and quality of expansion terms is vastly more influential than the amount \cite{sihvonen2004subject}.
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%% QUERY DRIFT
+
+%It is possible that the ranking function will rank only about fruit higher than it would have before. 
+%It is possible that one term from the original query may be over represented in the expanded query. 
+
+\section{Query Drift} \label{sec:querydrift}
+Query drift is often cited as the cause behind query expansion failure. Query drift is when the modified query's meaning has drifted too far from the user's information need. This happens if the expansion terms are not of good quality, i.e.\ they are not relevant, which is why we must choose the expansion terms carefully and not accidentally add spurious terms. The drift could be towards something specific but irrelevant or perhaps too vague to be helpful, especially if the system adds thousands of expansion terms.
+
+\begin{table}
+    \centering
+    \begin{tabular}{|l|lll|}
+    \hline
+    Original terms  & fruit     & pie     & recipe      \\ \hline
+    Expansion terms & apple     & crumble  & ingredients \\
+                    & banana    & pastry  &             \\
+                    & berry     & turnover &             \\
+                    & blueberry &         &             \\
+                    & juice     &         &             \\
+                    & kiwi      &         &             \\
+                    & lemon     &         &             \\
+                    & orange    &         &             \\
+                    & pineapple &         &             \\
+                    & strawberry    &       &           \\
+                    & watermelon    &       &           \\
+                    \hline
+    \end{tabular}
+    \caption{Example expansion terms for the query ``fruit pie recipe''.}
+    \label{table:querydrift}
+\end{table}
+
+Take the query: \textit{``fruit pie recipe''}. Table \ref{table:querydrift} shows 15 possible expansion terms which could be sourced from a semantic ontology, statistical analysis, or possibly relevance feedback. If we include all 15 expansion terms, then our modified query will contain 18 terms in total: 12 terms refer to fruit, 4 refer to pastry goods, and 2 terms are about cooking. If we use this modified query to retrieve documents, then a document that contains all 12 fruit terms will be ranked higher than a document that contains only the 3 terms: \textit{apple, crumble, recipe}, even though the latter document is almost certainly more relevant. The query has drifted towards fruit as we did not choose our expansion terms carefully enough.
+
+Query drift is known to affect all the forms of query expansion discussed in this chapter. There are many approaches that attempt to deal with drift. In relevance feedback, drift can be mitigated by first refining the initially retrieved documents \cite{Mitra:1998:IAQ:290941.290995}. For co-occurrence analysis, accounting for the term proximity within the document can help alleviate eventual drift \cite{Xu:2000:IEI:333135.333138}. In the upcoming experiments, we will explore other ways one could reduce the effects of query drift.
+
+% No matter which method is used, automatic query expansion is not perfect and will often append terms that cause query drift. 
+% We will be using query expansion in order to improve the performance of queries.
+% Clearly Query Reformulation can improve retrieval success, however we must be careful as to which words get added.
+% chosen to explore lexical-semantic query expansion
+% End chapter on how Query drift is our main concern
