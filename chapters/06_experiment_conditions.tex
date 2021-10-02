@@ -1,7 +1,7 @@
 \chapter{Experiment Conditions}
 \label{chap:experiment-conditions}
 
-It should not be a surprise that the experiments herein will be focused on improving automatic query expansion using linguistic features, specifically reducing query drift. This chapter outlines the final few ingredients required to bake a tasty science cake.
+The experiments herein will be focused on improving automatic query expansion using linguistic features, specifically reducing query drift. This chapter outlines the final few ingredients required to bake a tasty science cake.
 
 \section{Search Engine}
 The experiments will be performed on the academic search engine ATIRE \cite{Trotman:2012:OSI:2422256.2422269}, a bag of words term matching information retrieval system that ranks with an Okapi BM25 variant. The parameters of BM25 ($k_1$ and $b$) are chosen empirically by particle swarm optimization \cite{Trotman:2014:IBL:2682862.2682863} and are fixed for all experiments. The IDF component $log ({N} / {\mathit{df}_{\!\!t}} )$ from Robertson-Walker \cite{Lee:2007:IRS:1277741.1277891} will be used as it prevents negative weights. This is a useful feature for practical implementations because when the top-$k$ document scores are accumulated term by term, the scores will never decrease in value. Hence, documents that score 0 can be immediately discarded as irrelevant.
@@ -49,9 +49,9 @@ Two data sets will be used as the source of expansion terms, and both are semant
 
 % , and the most recent edition (2019) contains 443,000 words
 
-The second ontology is WordNet, with 25 different relationship types. Some are symmetric where the terms participating in the relation relate to each other in what WordNet denotes as a \textit{SynSet} or \textit{synonym ring}. Other relationships are not symmetric and describe \textit{`is-a'} or \textit{`has-a'} relationships described earlier (holonyms, meronyms, hypernyms, and hyponyms). These asymmetric relations do not form rings but rather hierarchies or taxonomies.
+The second ontology used is WordNet, which has a long history of use in language and information research \cite{fellbaum2010wordnet}. Over the years WordNet has grown to include many more words than Roget's thesaurus, and account for many more language features, see Figure \ref{wordnet-history}. As mentioned previously, many IR researchers have used older versions of WordNet for query expansion, including Voorhees, who used version 1.3 \cite{Voorhees:1994:QEU:188490.188508}. We will use version 3.1, the most recent version currently available. We anticipate that using a modern version of WordNet will outperform earlier experiments as the literature says that successful query expansion depends on the quality of the ontology \cite{kim1990model, jones1993thesaurus}, i.e. coverage, completeness, and accuracy.
 
-As mentioned previously, many IR researchers have used older versions of WordNet for query expansion, including Voorhees, who used version 1.3 \cite{Voorhees:1994:QEU:188490.188508}. We will use version 3.1, the most recent version currently available. We anticipate that using a modern version of WordNet will outperform earlier experiments as the literature says that successful query expansion   depends on the quality of the ontology \cite{kim1990model, jones1993thesaurus}, i.e. coverage, completeness, and accuracy.
+Apart from the number of included terms, the main point of difference between Roget's and WordNet is the classification of relationship types. Instead of having a single synonymous relation, WordNet has 25 different relationship types. Some are symmetric where the terms participating in the relation relate to each other in a \textit{SynSet} or \textit{synonym ring}. Other relationships are not symmetric and describe \textit{`is-a'} or \textit{`has-a'} relationships described earlier (holonyms, meronyms, hypernyms, and hyponyms). These asymmetric relations do not form rings but rather hierarchies or taxonomies.
 
 % e.g. 'Cat' $\leftarrow$ 'Mammal', Cat is a hyponym of Mammal, and Mammal is a hypernym of Cat.
 % hierarchical in nature, and have a corresponding pair which defines the other direction.  
@@ -82,7 +82,7 @@ ver & release & SynSets & notable additions \\
 \end{table}
 
 \subsection{WordNet 3.1 Relationships}
-The following is a description of the lexical-semantic relationships provided by WordNet, which correspond to definitions in linguistics. These relationships are are binary associations between nouns, verbs, adjectives, and adverbs. Other grammar particles, such as articles, prepositions, and conjugations are absent from WordNet as they don't carry any lexical-semantic information independently.
+The following is a description of the lexical-semantic relationships provided by WordNet, which correspond to definitions in linguistics. These relationships are binary associations between nouns, verbs, adjectives, and adverbs. Other grammar particles, such as articles, prepositions, and conjugations are absent from WordNet as they do not carry any lexical-semantic information independently.
 
 \subsubsection{SynSet}
 A synonym set, where synonymy is defined as broadly as possible: \textit{``interchangeable in some context''}. So each word in the SynSet shares at least one word sense with every other word. i.e.\ a single thesaurus entry.
@@ -274,10 +274,9 @@ The output of a real search engine is the set of documents that are believed to 
 
 % Analogy to the boy who cried wolf. Wolf when there is a wolf. No wolf when there is no wolf. etc...
 
-\newpage
 Every document in the corpus will fall into one of four categories. A perfectly correct system is when the Real System and the Oracle agree on each document. 
 
-A \hl{True-Positive} is when the Real System \textit{correctly} identifies a document as relevant. This is a successful hit. Similarly, a \hlgreen{True-Negative} is when the Real System \textit{correctly} identifies a document as not relevant. This is a successful rejection. A \hlcyan{False-Positive} is when the Real System \textit{incorrectly} identifies a document as relevant; a spurious document that should not have been retrieved, but is. And a \hlpink{False-Negative} is where the Real System \textit{incorrectly} identifies a document as not relevant; a document that should be retrieved, but isn't. 
+A \hl{True-Positive} is when the Real System \textit{correctly} identifies a document as relevant. This is a successful hit. Similarly, a \hlgreen{True-Negative} is when the Real System \textit{correctly} identifies a document as not relevant. This is a successful rejection. A \hlcyan{False-Positive} is when the Real System \textit{incorrectly} identifies a document as relevant; a spurious document that should not have been retrieved, but is. And a \hlpink{False-Negative} is where the Real System \textit{incorrectly} identifies a document as not relevant; a document that should be retrieved, but is not. 
 
 \textit{Recall} is the proportion of the relevant documents that are retrieved, it measures the amount of \hlpink{False-Negatives}. The proportion of \hl{True-Positives} to Relevant documents. We can maximize recall by retrieving \textit{all} of the documents, i.e.\ no relevant document is left unretrieved. This would reduce the \hlpink{False-Negatives} to 0, but in all likelihood, increase the \hlcyan{False-Positives} dramatically. 
 
@@ -292,7 +291,7 @@ For successful retrieval we want to maximise both precision and recall, however,
 
 
 
-
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%% AVERAGE PRECISION
 \subsection{Average Precision}
 

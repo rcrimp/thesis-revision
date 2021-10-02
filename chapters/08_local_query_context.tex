@@ -31,7 +31,7 @@ Here is an easier example to explain. In the following four sentences, can you a
     \item \textit{``I was \textbf{banking}\textsubscript{1} on the aeroplane to \textbf{bank}\textsubscript{2} into the river \textbf{bank}\textsubscript{3}, for I had over insured it with my \textbf{bank}\textsubscript{4}''}
 \end{enumerate}
 
-The first is impossible as the context is too vague. The second is impossible as it is a cleverly contrived pun. Number three is just right. The fourth sentence is an antanaclasis and contains 4 occurrences of the word ``bank''. Each can be disambiguated by considering the words preceding and following the term of interest. For example, \textit{bank}\textsubscript{3} is preceded by the attributive noun \textit{river}, which is preceded by the determiner \textit{the}. So the word sense of \textit{bank}\textsubscript{3} is clearly the land alongside a river. Table \ref{bank-definitions} shows all four intended definitions in the antanaclasis.
+The first is impossible as it is too vague, it lacks context. The second is also impossible as it is a pun, the context is overloaded. Number three is just right\footnote{...said Goldilocks before being mauled in the face by a territorial mother bear}. The fourth sentence is an antanaclasis and contains 4 occurrences of the word ``bank''. Each can be disambiguated by considering the the context; the words preceding and following the term of interest. For example, \textit{bank}\textsubscript{3} is preceded by the attributive noun \textit{river}, which is preceded by the determiner \textit{the}. So the word sense of \textit{bank}\textsubscript{3} is clearly the land alongside a river. Table \ref{bank-definitions} shows all four intended definitions in the antanaclasis.
 
 % Restricted expansion of query terms using part of speech tagging
 % https://patents.google.com/patent/US5721902A/en
@@ -138,7 +138,7 @@ We now take a closer look at the ontological structure of WordNet \cite{Miller:1
 \begin{figure}
     \centering
     \includegraphics[width=0.6\linewidth]{graphics/lemma_diagram.pdf} 
-    \caption{WordNet SynSets: ($q_i$) is the initial term; $S(q_i)$ are it's SynSets, and $L(s_{ij})$ are the lexical terms contained in each SynSet.}
+    \caption{WordNet SynSets: ($q_i$) is the initial term; $S(q_i)$ are its SynSets, and $L(s_{ij})$ are the lexical terms contained in each SynSet.}
     \label{fig:wn}
 \end{figure}
 
@@ -174,7 +174,7 @@ As discussed earlier, in IR, it is common to compute term similarity using the c
 % We will refer to the term being expanded as the \textit{term of interest}, and the set of remaining terms from the original query as the \textit{other terms}. 
 
 \subsection{The Tournament}
-The SynSets for each query term will be compared to the SynSets of the other terms using Wu-Palmer distance as the comparison function. The highest scoring SynSet wins the tournament and is chosen as the most likely candidate for the intended word sense. Then each of the lemma terms from the winning SynSet are added to the modified query. This process is repeated for each term in the original query. The algorithmic complexity of this process is exponential with respect to the number of query terms and the number of associated SynSets. However, in practice, the performance is reasonable since queries are short and the number of SynSets is usually quite small (except in rare cases like \textit{``set''}).
+The SynSets for each query term will be compared to the SynSets of the other terms using Wu-Palmer distance as the comparison function. The highest scoring SynSet wins the tournament and is chosen as the most likely candidate for the intended word sense. Then each of the lemma terms from the winning SynSet are added to the modified query. This process is repeated for each term in the original query. The algorithmic complexity of this process is exponential with respect to the number of query terms and the number of associated SynSets. However, in practice, the performance is reasonable since queries are short (see Section \ref{problems-with-relevance-models}) and the number of SynSets are small (except in the rare case of hyper-polysemous words like \textit{``set''}).
 
 \subsubsection{A Successful Example}
 %\begin{displayquote}
@@ -223,7 +223,7 @@ Our method failed for \textit{``pool''}, suggesting this method is not perfect i
 
 \section{Results}
 % Parameters chosen Top 17 documents, top 5 terms.
-Table \ref{table:results} shows our results on the TREC ad-hoc retrieval tracks. Included for comparison is a baseline (\textit{None}), which is no expansion, and the benchmark blind relevance feedback (\textit{RF}). Bold entries indicate the best result for the track. The main results from our experiments are labelled \textit{All-SynSets} (the standard approach described in section \ref{standardTS}), and \textit{One-SynSet} (our improved method described in section \ref{betterTS}). We also included two separate query reformulation techniques. The na{\"i}ve approach of appending terms directly to the query and term-frequency-merging (\textit{tfm}) \cite{Crimp:2017:ATR:3166072.3166074} described in Chapter \ref{chap:tfm}. Term-frequency merging attempts to reduce query drift caused by uneven numbers of expansion terms, which should be less of a problem for the \textit{One-SynSet} case.
+Table \ref{table:results} shows our results on the TREC ad-hoc retrieval tracks. Included for comparison is a baseline (\textit{None}), which is no expansion, and the benchmark blind relevance feedback (\textit{RF}). Bold entries indicate the best result for the track. The main results from our experiments are labelled \textit{All-SynSets} (the standard approach described in Section \ref{standardTS}), and \textit{One-SynSet} (our improved method described in Section \ref{betterTS}). We also included two separate query reformulation techniques. The na{\"i}ve approach of appending terms directly to the query and term-frequency-merging (\textit{tfm}) \cite{Crimp:2017:ATR:3166072.3166074} described in Chapter \ref{chap:tfm}. Term-frequency merging attempts to reduce query drift caused by uneven numbers of expansion terms, which should be less of a problem for the \textit{One-SynSet} case.
 
 The results are promising, as can be seen in Table \ref{table:results}. The standard approach \textit{All-SynSets} with \textit{na{\"i}ve QE} only beats the baseline in one case (TREC-6). In comparison, our method \textit{One-SynSet} with \textit{na{\"i}ve QE} improves upon the baseline in all but one case (TREC-6). And \textit{One-SynSet} with \textit{tf-merging} beats the baseline in all cases. Blind relevance feedback is still a strong contender as it remains unbeaten in TREC-1, TREC-2 and TREC-3.
 
